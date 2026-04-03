@@ -13,10 +13,16 @@ public class GameManager : MonoBehaviour
     [Header("Textes")]
     [SerializeField] private TextMeshProUGUI texteTimer;
     [SerializeField] private TextMeshProUGUI texteScoreFinal;
+    [SerializeField] private TextMeshProUGUI texteScore;
+
+    [Header("Timer")]
+    [SerializeField] private int minutesDepart = 2;
+    [SerializeField] private int secondesDepart = 30;
 
     private EtatJeu etatActuel;
-    private float tempsEcoule;
+    private float tempsRestant;
     private bool timerActif;
+    private int score;
 
     void Start()
     {
@@ -27,7 +33,16 @@ public class GameManager : MonoBehaviour
     {
         if (timerActif)
         {
-            tempsEcoule += Time.deltaTime;
+            tempsRestant -= Time.deltaTime;
+
+            if (tempsRestant <= 0f)
+            {
+                tempsRestant = 0f;
+                AfficherTimer();
+                TerminerJeu();
+                return;
+            }
+
             AfficherTimer();
         }
     }
@@ -42,7 +57,8 @@ public class GameManager : MonoBehaviour
 
     public void CommencerJeu()
     {
-        tempsEcoule = 0f;
+        tempsRestant = minutesDepart * 60f + secondesDepart;
+        score = 0;
         timerActif = true;
         AfficherTimer();
         ChangerEtat(EtatJeu.EnJeu);
@@ -51,9 +67,14 @@ public class GameManager : MonoBehaviour
     public void TerminerJeu()
     {
         timerActif = false;
-        int score = Mathf.Max(100, 1000 - Mathf.FloorToInt(tempsEcoule) * 10);
         texteScoreFinal.text = $"Score : {score}";
         ChangerEtat(EtatJeu.GameOver);
+    }
+
+    public void IncrementerPoints(int nbPoints)
+    {
+        score += nbPoints;
+        texteScore.text = $"Score : {score}";
     }
 
     public void Rejouer()
@@ -65,8 +86,8 @@ public class GameManager : MonoBehaviour
 
     private void AfficherTimer()
     {
-        int minutes = Mathf.FloorToInt(tempsEcoule / 60f);
-        int secondes = Mathf.FloorToInt(tempsEcoule % 60f);
+        int minutes = Mathf.FloorToInt(tempsRestant / 60f);
+        int secondes = Mathf.FloorToInt(tempsRestant % 60f);
         texteTimer.text = $"{minutes:00}:{secondes:00}";
     }
 }
