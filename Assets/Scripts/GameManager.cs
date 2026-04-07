@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using static Unity.VisualScripting.Metadata;
 
 public class GameManager : MonoBehaviour
 {
@@ -19,14 +20,34 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int minutesDepart = 2;
     [SerializeField] private int secondesDepart = 30;
 
+    [Header("Moles")]
+    [SerializeField] private GameObject listeMoles;
+    [SerializeField] private float intervaleDebut = 1.5f;
+    [SerializeField] private float intervaleFin = 0.3f;
+
+    private Mole[] moles;
+
     private EtatJeu etatActuel;
     private float tempsRestant;
     private bool timerActif;
     private int score;
+    private float intervaleTimer = 0f;
+    private float tempsTotal;
+
+    // Singleton
+    public static GameManager Instance { get; private set; }
 
     void Start()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+
         ChangerEtat(EtatJeu.Menu);
+        moles = listeMoles.GetComponentsInChildren<Mole>();
     }
 
     void Update()
@@ -44,10 +65,22 @@ public class GameManager : MonoBehaviour
             }
 
             AfficherTimer();
+
+            intervaleTimer += Time.deltaTime;
+
+            float progression = 1f - (tempsRestant / tempsTotal); // 0 au début, 1 à la fin.
+            float intervaleActuel = Mathf.Lerp(intervaleDebut, intervaleFin, progression); // Math.Lerp() proposé par Claude pour extrapoler de facon linéaire le temps entre les apparition de moles.
+
+            if (intervaleTimer >= intervaleActuel)
+            {
+                intervaleTimer = 0f;
+                SelectRandomMole();
+            }
         }
+
     }
 
-    public void ChangerEtat(EtatJeu nouvelEtat)
+    private void ChangerEtat(EtatJeu nouvelEtat)
     {
         etatActuel = nouvelEtat;
         canvasMenu.SetActive(etatActuel == EtatJeu.Menu);
@@ -55,16 +88,17 @@ public class GameManager : MonoBehaviour
         canvasGameOver.SetActive(etatActuel == EtatJeu.GameOver);
     }
 
-    public void CommencerJeu()
+    private void CommencerJeu()
     {
-        tempsRestant = minutesDepart * 60f + secondesDepart;
+        tempsTotal = minutesDepart * 60f + secondesDepart;
+        tempsRestant = tempsTotal;
         score = 0;
         timerActif = true;
         AfficherTimer();
         ChangerEtat(EtatJeu.EnJeu);
     }
 
-    public void TerminerJeu()
+    private void TerminerJeu()
     {
         timerActif = false;
         texteScoreFinal.text = $"Score : {score}";
@@ -77,7 +111,7 @@ public class GameManager : MonoBehaviour
         texteScore.text = $"Score : {score}";
     }
 
-    public void Rejouer()
+    private void Rejouer()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(
             UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
@@ -89,5 +123,15 @@ public class GameManager : MonoBehaviour
         int minutes = Mathf.FloorToInt(tempsRestant / 60f);
         int secondes = Mathf.FloorToInt(tempsRestant % 60f);
         texteTimer.text = $"{minutes:00}:{secondes:00}";
+    }
+
+    private void SelectRandomMole()
+    {
+        Mole[] molesDisponibles = System.Array.FindAll(moles, mole => !mole.estSortie);
+
+        if (molesDisponibles.Length == 0) return;
+
+        int index = Random.Range(0, molesDisponibles.Length);
+        molesDisponibles[index].Sortir();
     }
 }
