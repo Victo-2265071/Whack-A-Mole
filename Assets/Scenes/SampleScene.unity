@@ -2574,7 +2574,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::FeedbackGrab
   amplitudeGrab: 0.5
   dureeGrab: 0.3
-  sonGrab: {fileID: 0}
+  sonGrab: {fileID: 8300000, guid: 88102b738fd405a4dab8cad619f138b0, type: 3}
 --- !u!82 &1607255717
 AudioSource:
   m_ObjectHideFlags: 0
