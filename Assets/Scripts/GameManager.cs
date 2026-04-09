@@ -25,6 +25,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float intervaleDebut = 1.5f;
     [SerializeField] private float intervaleFin = 0.3f;
 
+    [Header("Marteau")]
+    [SerializeField] private GameObject marteau;
+
     private Mole[] moles;
 
     private EtatJeu etatActuel;
@@ -93,9 +96,17 @@ public class GameManager : MonoBehaviour
         tempsTotal = minutesDepart * 60f + secondesDepart;
         tempsRestant = tempsTotal;
         score = 0;
+        texteScore.text = $"Score : {score}";
         timerActif = true;
         AfficherTimer();
         ChangerEtat(EtatJeu.EnJeu);
+
+        // Remettre le marteau sur le socle.
+        marteau.gameObject.transform.position = new Vector3(0.75f, 1.15f, 1.3f);
+        marteau.gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
+        Rigidbody rb = marteau.gameObject.GetComponent<Rigidbody>();
+        rb.linearVelocity = Vector3.zero;
+        rb.angularVelocity = Vector3.zero;
     }
 
     private void TerminerJeu()
@@ -109,13 +120,6 @@ public class GameManager : MonoBehaviour
     {
         score += nbPoints;
         texteScore.text = $"Score : {score}";
-    }
-
-    private void Rejouer()
-    {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-        );
     }
 
     private void AfficherTimer()
