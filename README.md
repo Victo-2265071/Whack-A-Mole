@@ -1,1 +1,6 @@
-# Whack-A-Mole
+# Whack-a-Mole
+
+> Un simple Whack-a-Mole en VR.
+
+**Version:** 1.0.0  
+**Author:** William Champagne
