@@ -1,6 +1,5 @@
 using UnityEngine;
 using TMPro;
-using static Unity.VisualScripting.Metadata;
 
 public class GameManager : MonoBehaviour
 {

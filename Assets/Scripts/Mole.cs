@@ -52,7 +52,7 @@ public class Mole : MonoBehaviour
     void EstFrappe()
     {
         canHit = false;
-        GameManager.Instance.IncrementerPoints(1);
+        GameManager.Instance.IncrementerPoints(10);
         Entrer();
     }
 
