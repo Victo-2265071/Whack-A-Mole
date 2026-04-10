@@ -3,4 +3,4 @@
 > Un simple Whack-a-Mole en VR.
 
 **Version:** 1.0.0  
-**Author:** William Champagne
+**Auteur:** William Champagne
